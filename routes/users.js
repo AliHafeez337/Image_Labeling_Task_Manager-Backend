@@ -75,7 +75,8 @@ router.post('/register', (req, res) => {
 
 // Login
 router.post('/login', (req, res, next) => {
-  passport.authenticate('local', {session: false}, async function(err, user, info){
+  passport.authenticate('local', {session: false}, 
+  async function(err, user, info){
     if(err){return next(err);}
     if(!user){return res.status(401).send({
       'errmsg': "Failed login attempt"
@@ -103,6 +104,7 @@ router.get(
     try {
       var doc = await req.user.removeToken(req.token);
       if (doc != null) {
+        req.logout(); // This doesn't do anything... i.e after this token is deleted, you can use that token again... that's why I've implemented ensureAuthenticated function
         req.flash('success_msg', 'You are logged out');
         res.status(200).send({
           message: "You loged out successfully.",
