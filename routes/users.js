@@ -12,6 +12,21 @@ const User = require('../models/User');
 const { ensureAuthenticated } = require('../auth/auth');
 // const { JWTsecret } = require('../config/variables');
 
+// A hash generator promise for password...
+var genHash = async (password) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      bcrypt.genSalt(9, (err, salt) => {
+        bcrypt.hash(password, salt, (err, hash) => {
+          resolve(hash);
+        });
+      });
+    } catch (e) {
+      reject();
+    }
+  });
+};
+
 // Register
 router.post('/register', (req, res) => {
 
@@ -49,9 +64,8 @@ router.post('/register', (req, res) => {
           password
         });
 
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err;
+        genHash(newUser.password)
+          .then(async (hash) => {
             newUser.password = hash;
             newUser
               .save()
@@ -66,8 +80,13 @@ router.post('/register', (req, res) => {
                 });
               })
               .catch(err => console.log(err));
+          })
+          .catch((e) => {
+            console.log(e);
+            res.status(400).send({
+              errmsg: "Couldn't generate the hash.",
+            });
           });
-        });
       }
     });
   }
@@ -119,7 +138,110 @@ router.get(
         errmsg: "Something went wrong in the whole process...",
       });
     }
-});
+  }
+);
+
+// Logout all - Delete all tokens
+router.get(
+  '/logoutAll',  
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated, 
+  async (req, res) => {
+    try {
+      var doc = await req.user.removeAllTokens();
+      // console.log(doc);
+      if (doc.nModified > 0) {
+        req.logout(); // This doesn't do anything... i.e after this token is deleted, you can use that token again... that's why I've implemented ensureAuthenticated function
+        req.flash('success_msg', 'You are logged out from all the devices.');
+        res.status(200).send({
+          message: "You loged out successfully from all the devices.",
+        });
+      } else {
+        res.status(401).send({
+          errmsg: "Unable to log you out.",
+        });
+      }
+    } catch (e) {
+      res.status(400).send({
+        errmsg: "Something went wrong in the whole process...",
+      });
+    }
+  }
+);
+
+// Update me
+router.patch(
+  '/update',
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated, 
+  async (req, res, next) => {
+    var body = _.pick(req.body, [
+      "name",
+      "usertype",
+      "email",
+      "password",
+      "password2"
+    ]);
+
+    if (body.password != null && body.password2 != null){
+      if (body.password !== body.password2){
+        res.status(400).send({
+          'errmsg': "Passwords to be updated must match..."
+        })
+      }
+      else{
+        genHash(body.password)
+          .then(async (hash) => {
+            body.password = hash;
+            var doc = await User.findByIdAndUpdate(
+              { _id: req.user._id },
+              body,
+              { new: true });
+            res.status(200).send({
+              'msg': "Updated successfully!",
+              doc
+            })
+          })
+          .catch((e) => {
+            console.log(e);
+            res.status(400).send({
+              errmsg: "Couldn't generate the hash.",
+            });
+          });
+      }
+    }
+    else{
+      var doc = await User.findByIdAndUpdate(
+        { _id: req.user._id },
+        body,
+        { new: true });
+      res.status(200).send({
+        'msg': "Updated successfully!",
+        doc
+      })
+    }
+  }
+)
+
+// Delete me
+router.delete(
+  '/delete', 
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated, 
+  async (req, res, next) => {
+    var doc = await User.deleteOne({ _id: req.user._id });
+    console.log(doc);
+    if (doc.deletedCount == 0){
+      res.status(400).send({
+        'errmsg': "Sorry, unable delete user."
+      })
+    } else {
+      res.status(200).send({
+        'msg': "User deleted successfully!"
+      }) 
+    }
+  }
+);
 
 // Profile
 router.get(
@@ -128,6 +250,7 @@ router.get(
   ensureAuthenticated, 
   async (req, res, next) => {
     res.send(req.user);
-});
+  }
+);
 
 module.exports = router;
