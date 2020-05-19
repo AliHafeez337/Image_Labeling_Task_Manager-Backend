@@ -9,7 +9,8 @@ const { JWTsecret } = require('../config/variables');
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   usertype: {
     type: String,
@@ -88,7 +89,7 @@ UserSchema.methods.generateAuthToken = function () {
 
 UserSchema.methods.removeToken = function (token) {
   var user = this;
-  return user.update({
+  return user.updateOne({
     $pull: {
       tokens: {
         token
@@ -97,6 +98,13 @@ UserSchema.methods.removeToken = function (token) {
   });
 };
 
+UserSchema.methods.removeAllTokens = function () {
+  var user = this;
+  return user.updateOne({
+    tokens: []
+  },
+  { new: true });
+};
 
 UserSchema.statics.findByToken = async function (token) {
   if (token.startsWith('bearer ')) {
