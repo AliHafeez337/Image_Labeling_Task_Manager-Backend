@@ -63,6 +63,7 @@ UserSchema.methods.toJSON = function () {
   var userObject = user.toObject();
   var picked = _.pick(userObject,
     [
+      '_id',
       'usertype',
       'email',
       'name',

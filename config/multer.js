@@ -7,11 +7,20 @@ const multer= require("multer");
 //that will be uploaded
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './uploads/userImages')
+    console.log(req.originalUrl.slice(1, 10))
+    if (req.originalUrl.slice(1, 10) === 'taskImage'){
+      cb(null, './uploads/taskImages')
+    } else {
+      cb(null, './uploads/userImages')
+    }
   },
   filename: function (req, file, cb) {
     // cb(null, file.originalname)
-    cb(null, file.originalname + '-' + Date.now() + path.extname(file.originalname));
+    if (req.originalUrl.slice(1, 10) === 'taskImage'){
+      cb(null, Date.now() + path.extname(file.originalname) + '-' + file.originalname);
+    } else {
+      cb(null, file.originalname + '-' + Date.now() + path.extname(file.originalname));
+    }
   }
 })
 
@@ -36,4 +45,4 @@ const upload = multer({
   fileFilter
 }).single("photo");
 
-module.exports= upload;
+module.exports = { upload };

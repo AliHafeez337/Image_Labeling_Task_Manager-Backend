@@ -42,7 +42,7 @@ router.post(
       "password",
       "password2"
     ]);
-    console.log(body)
+    // console.log(body)
 
     if (body.password != null && body.password2 != null){
       if (body.password !== body.password2){
