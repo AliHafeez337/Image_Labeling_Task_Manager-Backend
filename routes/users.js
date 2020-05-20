@@ -79,7 +79,12 @@ router.post('/register', (req, res) => {
                   user
                 });
               })
-              .catch(err => console.log(err));
+              .catch(err => {
+                console.log(err)
+                res.status(200).send({
+                  'errmsg': err
+                });
+              });
           })
           .catch((e) => {
             console.log(e);

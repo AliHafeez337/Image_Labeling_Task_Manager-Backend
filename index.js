@@ -111,5 +111,6 @@ app.use(function(req, res, next) {
 
 /* ROUTES */
 
-app.use('/user', require('./routes/users.js'));
-app.use('/', require('./routes/index.js'));
+app.use('/admin', require('./routes/admin'));
+app.use('/user', require('./routes/users'));
+app.use('/', require('./routes/index'));

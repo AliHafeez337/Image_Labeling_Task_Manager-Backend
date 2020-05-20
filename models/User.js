@@ -34,6 +34,10 @@ const UserSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  archived: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -58,6 +62,7 @@ UserSchema.methods.toJSON = function () {
       'usertype',
       'email',
       'name',
+      'archived',
       'createdAt'
     ]);
 
