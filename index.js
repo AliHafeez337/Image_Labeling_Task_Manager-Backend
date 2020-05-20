@@ -111,6 +111,7 @@ app.use(function(req, res, next) {
 
 /* ROUTES */
 
+app.use('/taskImage', require("./routes/taskImage"));
 app.use('/task', require("./routes/task"));
 app.use('/userImage', require("./routes/userImage"));
 app.use('/admin', require('./routes/admin'));
