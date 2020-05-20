@@ -1,5 +1,5 @@
 module.exports = {
-  ensureAuthenticated: async (req, res, next) => {
+  ensureAuthenticated: (req, res, next) => {
     if (req.isAuthenticated()) {
       req.token = req.headers.authorization.slice(7)
 
@@ -13,5 +13,14 @@ module.exports = {
     res.status(401).send({
       'errmsg': "Unauthorized, You can not access this resource."
     });
+  },
+  adminAuthenticated: (req, res, next) => {
+    if (req.user.usertype === 'admin') {
+      return next()
+    } else {
+      res.status(401).send({
+        'errmsg': "Unauthorized, You must be an admin access this resource."
+      });
+    }
   }
 };
