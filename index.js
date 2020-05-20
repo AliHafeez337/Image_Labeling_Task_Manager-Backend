@@ -111,6 +111,15 @@ app.use(function(req, res, next) {
 
 /* ROUTES */
 
+app.use('/userImage', require("./routes/userImage"));
 app.use('/admin', require('./routes/admin'));
 app.use('/user', require('./routes/users'));
-app.use('/', require('./routes/index'));
+// Serve static files
+app.get("/:file", function (req, res) {
+  console.log(req.params.file);
+  
+  res.sendFile("./uploads/userImages/" + req.params.file, {
+    root: __dirname,
+  });
+});
+app.use('/', (req, res) => res.send("Hello Moto...!"));
