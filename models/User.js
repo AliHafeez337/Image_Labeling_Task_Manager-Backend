@@ -18,6 +18,10 @@ const UserSchema = new mongoose.Schema({
     enum: ['admin', 'labeller'],
     default: 'labeller'
   },
+  photo: {
+    type: String,
+    required: false
+  },
   email: {
     type: String,
     required: true,
@@ -63,6 +67,7 @@ UserSchema.methods.toJSON = function () {
       'email',
       'name',
       'archived',
+      'photo',
       'createdAt'
     ]);
 
