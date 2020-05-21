@@ -20,14 +20,22 @@ const TaskSchema = new mongoose.Schema({
     url: {
       type: String,
       required: true
+    }
+  }],
+  labels: [{
+    category: {
+      type: String,
+      required: false,
+      trim: true
     },
-    lebels: [{
-      name: {
-        type: String,
-        required: false,
-        trim: true
-      }
-    }]
+    name: {
+      type: String,
+      trim: true
+    },
+    done: {
+      type: Boolean,
+      default: false
+    }
   }],
   archived: {
     type: Boolean,
@@ -52,6 +60,7 @@ TaskSchema.methods.toJSON = function () {
       'name',
       'assignedTo',
       'photos',
+      'labels',
       'dueDate',
       'archived',
       'createdAt'
