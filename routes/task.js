@@ -45,11 +45,60 @@ router.patch(
   ensureAuthenticated,
   adminAuthenticated,
   async (req, res) => {
+    const id = req.query.id
     var body = _.pick(req.body, [
       "name",
       "assignedTo",
-      "photos"
-    ]);
+      "archived",
+      "labels",
+      "dueDate"
+    ])
+    // console.log(body)
+    if (body.labels){
+      Task.findByIdAndUpdate(
+        { _id: req.query.id },
+        { $set: {
+            'labels': []
+          } 
+        },
+        { new: true }
+      ).exec(function(err){
+        if (err){
+          res.status(400).send({
+            'errmsg': "Couldn't empty the old labels."
+          })
+        }
+        Task.findByIdAndUpdate(
+          { _id: req.query.id },
+          body,
+          { new: true }
+        ).exec(function(err, doc){
+          if (err){
+            console.log(err)
+            res.status(400).send({
+              'errmsg': "Couldn't update the task..."
+            })
+          } else {
+            res.status(200).send(doc)
+          }
+        })
+      });
+    } else {
+      Task.findByIdAndUpdate(
+        { _id: req.query.id },
+        body,
+        { new: true }
+      ).exec(function(err, doc){
+        if (err){
+          console.log(err)
+          res.status(400).send({
+            'errmsg': "Couldn't update the task..."
+          })
+        } else {
+          res.status(200).send(doc)
+        }
+      })
+    }
   }
 )
 
