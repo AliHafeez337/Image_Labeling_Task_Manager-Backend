@@ -54,8 +54,10 @@ router.patch(
       "dueDate"
     ])
     // console.log(body)
+    
+    // if labels are being edited, just remove all labels
     if (body.labels){
-      Task.findByIdAndUpdate(
+      await Task.findByIdAndUpdate(
         { _id: req.query.id },
         { $set: {
             'labels': []
@@ -68,37 +70,42 @@ router.patch(
             'errmsg': "Couldn't empty the old labels."
           })
         }
-        Task.findByIdAndUpdate(
-          { _id: req.query.id },
-          body,
-          { new: true }
-        ).exec(function(err, doc){
-          if (err){
-            console.log(err)
-            res.status(400).send({
-              'errmsg': "Couldn't update the task..."
-            })
-          } else {
-            res.status(200).send(doc)
-          }
-        })
       });
-    } else {
-      Task.findByIdAndUpdate(
-        { _id: req.query.id },
-        body,
-        { new: true }
-      ).exec(function(err, doc){
-        if (err){
-          console.log(err)
-          res.status(400).send({
-            'errmsg': "Couldn't update the task..."
-          })
-        } else {
-          res.status(200).send(doc)
-        }
-      })
     }
+
+    // if labellers are being edited, just remove all labellers
+    if (body.assignedTo){
+      await Task.findByIdAndUpdate(
+        { _id: req.query.id },
+        { $set: {
+            'assignedTo': []
+          } 
+        },
+        { new: true }
+      ).exec(function(err){
+        if (err){
+          res.status(400).send({
+            'errmsg': "Couldn't empty the old assignedTos."
+          })
+        }
+      });
+    }
+
+    // Now write it as new...
+    Task.findByIdAndUpdate(
+      { _id: req.query.id },
+      body,
+      { new: true }
+    ).exec(function(err, doc){
+      if (err){
+        console.log(err)
+        res.status(400).send({
+          'errmsg': "Couldn't update the task..."
+        })
+      } else {
+        res.status(200).send(doc)
+      }
+    })
   }
 )
 
