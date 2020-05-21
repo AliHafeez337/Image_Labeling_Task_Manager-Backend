@@ -2,14 +2,23 @@
 
 const path= require("path");
 const multer= require("multer");
+const fs = require("fs");
 
 //storage management for the file
 //that will be uploaded
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    console.log(req.originalUrl.slice(1, 10))
+    // console.log(req.originalUrl.slice(1, 10))
+    // console.log(path.join(__dirname, '../', 'uploads'))
     if (req.originalUrl.slice(1, 10) === 'taskImage'){
-      cb(null, './uploads/taskImages')
+      if (!fs.existsSync(path)) {
+        fs.mkdir(path.join(__dirname, '../', 'uploads', req.query.id), (err) => { 
+          if (!err) { 
+            console.log('Directory: ' + req.query.id + ' created successfully!'); 
+          } 
+        });
+      }
+      cb(null, './uploads/')
     } else {
       cb(null, './uploads/userImages')
     }

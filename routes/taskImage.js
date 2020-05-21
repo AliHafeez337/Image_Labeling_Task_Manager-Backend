@@ -39,7 +39,7 @@ router.patch(
                 { 
                   $push: { 
                     photos: { 
-                      url: req.file.filename,
+                      url: req.query.id + '/' + req.file.filename,
                       labels: []
                     }
                   }
