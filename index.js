@@ -116,12 +116,25 @@ app.use('/task', require("./routes/task"));
 app.use('/userImage', require("./routes/userImage"));
 app.use('/admin', require('./routes/admin'));
 app.use('/user', require('./routes/users'));
-// Serve static files
-app.get("/:file", function (req, res) {
-  console.log(req.params.file);
-  
+
+// Serve user image as static file
+app.get("/:file", (req, res) => {
+  // console.log(req.params.file);
+
   res.sendFile("./uploads/userImages/" + req.params.file, {
     root: __dirname,
   });
 });
+
+// Serve task image as static file
+app.get("/:folder/:file", (req, res) => {
+  // console.log(req.params.folder);
+  // console.log(req.params.file);
+
+  res.sendFile("./uploads/" + req.params.folder + '/' + req.params.file, {
+    root: __dirname,
+  });
+})
+
+// Motto
 app.use('/', (req, res) => res.send("Hello Moto...!"));
