@@ -18,7 +18,7 @@ let storage = multer.diskStorage({
           } 
         });
       }
-      cb(null, './uploads/')
+      cb(null, './uploads/' + req.query.id)
     } else {
       cb(null, './uploads/userImages')
     }

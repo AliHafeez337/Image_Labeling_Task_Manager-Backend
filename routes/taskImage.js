@@ -73,13 +73,22 @@ router.patch(
   passport.authenticate('jwt', {session: false}),
   ensureAuthenticated,
   async (req, res) => {
-    var doc = await User.findByIdAndUpdate(
-      {_id:  req.user._id}, 
-      {photo: ''}
+    console.log(req.query.photoUrl)
+    var doc = await Task.findByIdAndUpdate(
+      { _id:  req.query.id }, 
+      { 
+        $pull: { 
+          photos: {
+            url: req.query.photoUrl
+          }
+        }
+      },
+      { new: true }
       );
+    console.log(doc);
       
     try{
-        let $filePath= "./uploads/userImages/" + req.user.photo
+        let $filePath= "./uploads/" + req.query.photoUrl
         console.log($filePath)
         fs.unlinkSync($filePath, (err)=>{
             if(err){
@@ -94,7 +103,8 @@ router.patch(
         console.log("couldnt find " + req.user.photo + " to be deleted");
     }
     res.status(200).send({
-        "msg": "The image is deleted..."
+        "msg": "The image is deleted...",
+        doc
     })
   }
 )
