@@ -32,7 +32,8 @@ router.post(
       .catch(err => {
         console.log(err)
         res.status(200).send({
-          'errmsg': err
+          'errmsg': "Couldn't create a new task...",
+          err
         });
       });
   }
@@ -67,7 +68,8 @@ router.patch(
       ).exec(function(err){
         if (err){
           res.status(400).send({
-            'errmsg': "Couldn't empty the old labels."
+            'errmsg': "Couldn't empty the old labels.",
+            err
           })
         }
       });
@@ -85,7 +87,8 @@ router.patch(
       ).exec(function(err){
         if (err){
           res.status(400).send({
-            'errmsg': "Couldn't empty the old assignedTos."
+            'errmsg': "Couldn't empty the old assignedTos.",
+            err
           })
         }
       });
@@ -100,7 +103,8 @@ router.patch(
       if (err){
         console.log(err)
         res.status(400).send({
-          'errmsg': "Couldn't update the task..."
+          'errmsg': "Couldn't update the task...",
+          err
         })
       } else {
         res.status(200).send(doc)

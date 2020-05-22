@@ -30,7 +30,9 @@ const TaskSchema = new mongoose.Schema({
     },
     name: {
       type: String,
-      trim: true
+      trim: true,
+      unique: true,
+      sparse: true
     },
     done: {
       type: Boolean,
