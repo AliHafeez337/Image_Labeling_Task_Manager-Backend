@@ -3,12 +3,14 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const _ = require("lodash");
+const { MongoClient, ObjectId } = require('mongodb');
 
 // Load User model
 const User = require('../models/User');
 const Task = require('../models/Task');
 
 // Local imports
+const { database, dbName } = require('./../config/db');
 const { ensureAuthenticated, adminAuthenticated } = require('../auth/auth');
 
 
@@ -110,6 +112,95 @@ router.patch(
         res.status(200).send(doc)
       }
     })
+  }
+)
+
+// var findLabels = async (db, collection, photos) => {
+//   return new Promise(async (resolve, reject) => {
+//     var result = []
+//     for (let i in photos){
+//       var photo = {}
+//       photo._id = photos[i]._id
+//       photo.url = photos[i].url
+
+//       var result = await db.collection(collection)
+//         .find({
+//           'picture': photos[i]._id.toString()
+//         })
+//         .toArray((err, results) => {
+//           if (err){
+//             console.log(err)
+//           };
+//           // console.log(results)
+
+//           photo.labels = results
+//           // console.log(photo)
+//           result.push(photo)
+//           // console.log(result)
+//         })
+//     }
+//     resolve(result)
+//   })
+// }
+
+// Any user can view a task
+router.get(
+  '/view/:id',
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated,
+  async (req, res) => {
+    const task = await Task.findById(req.params.id)
+
+    if (task){
+      res.status(200).send(task)
+
+      // MongoClient.connect(database, async (err, client) => {
+      //   if (err) {
+      //     return console.log('Unable to connect to MongoDB server');
+      //   }
+  
+      //   const db = client.db(dbName);
+      //   const collection = 'labels';
+
+      //   findLabels(db, collection, task.photos)
+      //     .then(photos => {
+      //       // console.log(photos)
+      //       clonedTask.photos = photos
+      //       // console.log(clonedTask.photos)
+      //       res.status(200).send(clonedTask)
+      //     })
+      //     .catch(err => {
+      //       console.log(err)
+      //     })
+      //   // for (let i in task.photos){
+      //   //   var photo = {}
+      //   //   photo._id = task.photos[i]._id
+      //   //   photo.url = task.photos[i].url
+
+      //   //   await db.collection(collection)
+      //   //     .find({
+      //   //       'picture': task.photos[i]._id.toString()
+      //   //     })
+      //   //     .toArray((err, results) => {
+      //   //       if (err){
+      //   //         console.log(err)
+      //   //       };
+      //   //       // console.log(results)
+
+      //   //       photo.labels = results
+      //   //       console.log(photo)
+      //   //       clonedTask.photos.push(photo)
+      //   //     })
+      //   // }
+      //   console.log(clonedTask.photos)
+      //   res.status(200).send(clonedTask)
+      //   client.close();
+      // })
+    } else {
+      res.status(400).send({
+        'errmsg': "Couldn't find any task by this id..."
+      })
+    }
   }
 )
 
