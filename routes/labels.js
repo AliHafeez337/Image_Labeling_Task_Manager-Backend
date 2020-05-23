@@ -172,4 +172,40 @@ router.delete(
   }
 )
 
+// Adding a label
+// Not checking if the right labeller is labeling the picture...
+router.get(
+  '/picture/:id',
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated,
+  async (req, res) => {
+    MongoClient.connect(database, async (err, client) => {
+      if (err) {
+        return console.log('Unable to connect to MongoDB server');
+      }
+
+      const db = client.db(dbName);
+      const collection = 'labels';
+
+      await db.collection(collection)
+        .find({
+          'picture': req.params.id
+        })
+        .toArray((err, results) => {
+          if (err){
+            console.log(err)
+            res.status(400).send({
+              'errmsg': "Unable to find any labels for this image..."
+            })
+          };
+          // console.log(results)
+          res.status(200).send(results)
+        })
+
+      client.close();
+    })
+
+  }
+)
+
 module.exports = router;
