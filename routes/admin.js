@@ -176,4 +176,24 @@ router.delete(
   }
 )
 
+// Admin can get a user
+router.get(
+  '/:id',
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated,
+  adminAuthenticated, 
+  async (req, res) => {
+    const id = req.params.id;
+    var doc = await User.findOne({ _id: id });
+    // console.log(doc);
+    if (!doc){
+      res.status(400).send({
+        'errmsg': "Sorry, user not found..."
+      })
+    } else {
+      res.status(200).send(doc) 
+    }
+  }
+)
+
 module.exports = router;
