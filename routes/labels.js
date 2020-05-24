@@ -220,8 +220,7 @@ router.delete(
   }
 )
 
-// Adding a label
-// Not checking if the right labeller is labeling the picture...
+// Getting all the labels related to one picture
 router.get(
   '/picture/:id',
   passport.authenticate('jwt', {session: false}),
@@ -252,7 +251,40 @@ router.get(
 
       client.close();
     })
+  }
+)
 
+// Get one label by the _id
+router.get(
+  '/:id',
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated,
+  async (req, res) => {
+    MongoClient.connect(database, async (err, client) => {
+      if (err) {
+        return console.log('Unable to connect to MongoDB server');
+      }
+
+      const db = client.db(dbName);
+      const collection = 'labels';
+
+      await db.collection(collection)
+        .findOne({
+          '_id': ObjectId(req.params.id)
+        })
+        .then(results => {
+          // console.log(results)
+          res.status(200).send(results)
+        })
+        .catch(err => {
+          console.log(err)
+          res.status(400).send({
+            'errmsg': "Unable to find label for this id..."
+          })
+        })
+
+      client.close();
+    })
   }
 )
 
