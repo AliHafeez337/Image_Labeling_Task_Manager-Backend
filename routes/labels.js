@@ -70,6 +70,7 @@ router.post(
               })
           }
           req.body.createdAt = new Date(Date.now())
+          req.body.labeller = req.user._id
           await db.collection(collection)
             .save(req.body)
             .then(async doc => {
