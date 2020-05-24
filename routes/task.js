@@ -114,24 +114,6 @@ router.patch(
   }
 )
 
-// Any user can view a task
-router.get(
-  '/view/:id',
-  passport.authenticate('jwt', {session: false}),
-  ensureAuthenticated,
-  async (req, res) => {
-    const task = await Task.findById(req.params.id)
-
-    if (task){
-      res.status(200).send(task)
-    } else {
-      res.status(400).send({
-        'errmsg': "Couldn't find any task by this id..."
-      })
-    }
-  }
-)
-
 // Admin can delete a task
 router.delete(
   '/delete/:id',
@@ -140,6 +122,7 @@ router.delete(
   adminAuthenticated,
   async (req, res) => {
     const task = await Task.findByIdAndDelete(req.params.id)
+
     if (task){
       console.log(task.photos)
       for (let i in task.photos){
@@ -182,6 +165,44 @@ router.delete(
         client.close();
       })
 
+      res.status(200).send(task)
+    } else {
+      res.status(400).send({
+        'errmsg': "Couldn't find any task by this id..."
+      })
+    }
+  }
+)
+
+// A labeller can view his/her assigned tasks
+router.get(
+  '/mine',
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated,
+  async (req, res) => {
+    const task = await Task.find(
+      { 'assignedTo': req.user._id }
+    )
+
+    if (task){
+      res.status(200).send(task)
+    } else {
+      res.status(400).send({
+        'errmsg': "Couldn't find any task by this id..."
+      })
+    }
+  }
+)
+
+// Any user can view a task
+router.get(
+  '/:id',
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated,
+  async (req, res) => {
+    const task = await Task.findById(req.params.id)
+
+    if (task){
       res.status(200).send(task)
     } else {
       res.status(400).send({

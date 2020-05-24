@@ -48,9 +48,7 @@ module.exports = function(passport) {
       var user = await User.findById(jwtPayload._id)
 
       if (!user){
-        return cb({
-          'errmsg': "No user found."
-        });
+        return cb(null, false);
       }
       else{
         return cb(null, user);
