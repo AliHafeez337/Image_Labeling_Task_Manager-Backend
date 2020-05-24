@@ -12,6 +12,20 @@ const Task = require('../models/Task');
 const { database, dbName } = require('./../config/db');
 const { ensureAuthenticated, adminAuthenticated } = require('../auth/auth');
 
+var calculatePercentage = async (labels) => {
+  return new Promise(async (resolve, reject) => {
+    var loop = 0
+    var done = 0
+    labels.forEach(label => {
+      // console.log(label)
+      loop ++
+      if (label.done){
+        done ++
+      }
+    })
+    resolve(done / loop * 100)
+  })
+}
 // Adding a label
 // Not checking if the right labeller is labeling the picture...
 router.post(
@@ -59,7 +73,7 @@ router.post(
           await db.collection(collection)
             .save(req.body)
             .then(async doc => {
-              console.log(doc.ops)
+              // console.log(doc.ops)
               if (doc.n === 0){
                 res.status(400).send({
                   'errmsg': "Couldn't save the label..."
@@ -85,8 +99,25 @@ router.post(
                     },
                     { new: true }
                   )
-                  // console.log(doc2)
-                  res.status(200).send(doc.ops)
+                  if (doc2){
+                    calculatePercentage(doc2.labels)
+                      .then(async percent => {
+                        var doc3 = await Task.findByIdAndUpdate(
+                          { 
+                            '_id': doc2._id
+                          },
+                          {
+                            'percent': percent
+                          },
+                          { new: true }
+                        )     
+                        res.status(200).send({ 
+                          'msg': "Successfully added the label...",
+                          labelDetails: doc.ops, 
+                          taskDetails: doc3 
+                        })  
+                      })                  
+                  }
                   break
                 }
               }
@@ -117,24 +148,24 @@ router.delete(
           'id': req.query.id
         })
         .then(async label => {
-          console.log(label)        
+          // console.log(label)        
           await db.collection(collection)
             .remove({
               'id': req.query.id
             })
             .then(async doc => {
-              console.log(doc)
+              // console.log(doc)
               var doc1 = await Task.findById(
                 { 
                   '_id': label.task
                 }
               )
               // console.log(doc1.labels)
-              console.log(label.label)
+              // console.log(label.label)
               for (let i = 0; i < doc1.labels.length; i++){
-                console.log(doc1.labels[i]._id)
+                // console.log(doc1.labels[i]._id)
                 if (doc1.labels[i]._id == label.label){
-                  console.log(i)
+                  // console.log(i)
                   var doc2 = await Task.findByIdAndUpdate(
                     { 
                       '_id': label.task
@@ -147,10 +178,26 @@ router.delete(
                     },
                     { new: true }
                   )
-                  // console.log(doc2)
-                  res.status(200).send({
-                    'msg': "Successfully deleted the label..."
-                  })
+                  if (doc2){
+                    console.log(doc2.labels)
+                    calculatePercentage(doc2.labels)
+                      .then(async percent => {
+                        console.log(percent)
+                        var doc3 = await Task.findByIdAndUpdate(
+                          { 
+                            '_id': doc2._id
+                          },
+                          {
+                            'percent': percent
+                          },
+                          { new: true }
+                        )     
+                        res.status(200).send({ 
+                          'msg': "Successfully deleted the label...",
+                          taskDetails: doc3 
+                        })  
+                      })                  
+                  }
                   break
                 }
               }

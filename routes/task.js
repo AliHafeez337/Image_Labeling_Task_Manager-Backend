@@ -1,13 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const _ = require("lodash");
 const fs = require("fs");
 const { MongoClient, ObjectId } = require('mongodb');
 
 // Load User model
-const User = require('../models/User');
 const Task = require('../models/Task');
 
 // Local imports

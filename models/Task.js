@@ -6,10 +6,17 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
 const TaskSchema = new mongoose.Schema({
+  percent: {
+    type: Number,
+    required: false,
+    default: 0
+  },
   name: {
     type: String,
     required: false,
-    trim: true
+    trim: true,
+    unique: true,
+    sparse: true
   },
   assignedTo: [{
     type: ObjectId,
@@ -30,9 +37,7 @@ const TaskSchema = new mongoose.Schema({
     },
     name: {
       type: String,
-      trim: true,
-      unique: true,
-      sparse: true
+      trim: true
     },
     done: {
       type: Boolean,
@@ -60,6 +65,7 @@ TaskSchema.methods.toJSON = function () {
     [
       '_id',
       'name',
+      'percent',
       'assignedTo',
       'photos',
       'labels',
@@ -70,6 +76,26 @@ TaskSchema.methods.toJSON = function () {
 
   return picked;
 };
+
+TaskSchema.pre('findOneAndUpdate', async function() {
+  // const docToUpdate = await this.model.findOne(this.getQuery());  // The document that `findOneAndUpdate()` will modify
+  // console.log(docToUpdate);
+  // var percent = 0
+  // if(docToUpdate.labels){
+  //   var loop = 0
+  //   var done = 0
+  //   docToUpdate.labels.forEach(label => {
+  //     // console.log(label)
+  //     loop ++
+  //     if (label.done){
+  //       done ++
+  //     }
+  //   });
+
+  //   console.log(percent)
+  //   docToUpdate.percent = done / loop * 100
+  // }
+});
 
 const Task = mongoose.model('Task', TaskSchema);
 
