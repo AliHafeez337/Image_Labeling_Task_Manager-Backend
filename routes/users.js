@@ -46,14 +46,14 @@ router.post('/register', (req, res) => {
   }
 
   if (errors.length > 0) {
-    res.status(400).send({
+    res.status(200).send({
       'errmsg': errors
     })
   } else {
     User.findOne({ email: email }).then(user => {
       if (user) {
         errors.push({ msg: 'Email already exists' });
-        res.status(400).send({
+        res.status(200).send({
           'errmsg': errors
         })
       } else {
