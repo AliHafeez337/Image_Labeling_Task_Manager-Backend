@@ -190,7 +190,7 @@ router.patch(
 
     if (body.password != null && body.password2 != null){
       if (body.password !== body.password2){
-        res.status(400).send({
+        res.status(200).send({
           'errmsg': "Passwords to be updated must match..."
         })
       }
@@ -209,7 +209,7 @@ router.patch(
           })
           .catch((e) => {
             console.log(e);
-            res.status(400).send({
+            res.status(200).send({
               errmsg: "Couldn't generate the hash.",
             });
           });
