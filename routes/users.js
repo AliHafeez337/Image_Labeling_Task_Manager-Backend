@@ -102,7 +102,7 @@ router.post('/login', (req, res, next) => {
   passport.authenticate('local', {session: false}, 
   async function(err, user, info){
     if(err){return next(err);}
-    if(!user){return res.status(401).send({
+    if(!user){return res.status(200).send({
       'errmsg': "Failed login attempt"
     })}
     else{
@@ -134,7 +134,7 @@ router.get(
           message: "You loged out successfully.",
         });
       } else {
-        res.status(401).send({
+        res.status(200).send({
           errmsg: "Unable to log you out.",
         });
       }
@@ -162,7 +162,7 @@ router.get(
           message: "You loged out successfully from all the devices.",
         });
       } else {
-        res.status(401).send({
+        res.status(200).send({
           errmsg: "Unable to log you out.",
         });
       }
