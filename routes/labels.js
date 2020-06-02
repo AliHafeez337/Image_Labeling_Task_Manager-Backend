@@ -141,7 +141,7 @@ router.delete(
       if (err) {
         return console.log('Unable to connect to MongoDB server');
       }
-
+      
       const db = client.db(dbName);
       const collection = 'labels';
       await db.collection(collection)
@@ -223,8 +223,8 @@ router.delete(
 // Getting all the labels related to one picture
 router.get(
   '/picture/:id',
-  passport.authenticate('jwt', {session: false}),
-  ensureAuthenticated,
+  // passport.authenticate('jwt', {session: false}),
+  // ensureAuthenticated,
   async (req, res) => {
     MongoClient.connect(database, async (err, client) => {
       if (err) {

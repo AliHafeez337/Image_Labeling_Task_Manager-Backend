@@ -11,7 +11,7 @@ const Task = require('../models/Task');
 const { upload } = require("../config/multer");
 
 // Local imports
-const { ensureAuthenticated } = require('../auth/auth');
+const { ensureAuthenticated, adminAuthenticated } = require('../auth/auth');
 
 // Edit a user...
 // Admin can edit someone witout password, All can edit themselves fully except their email...
@@ -19,6 +19,7 @@ router.patch(
   '/add', 
   passport.authenticate('jwt', {session: false}),
   ensureAuthenticated,
+  adminAuthenticated,
   (req, res) => {
     // try {
       const id = req.query.id;
@@ -72,6 +73,7 @@ router.patch(
   '/delete', 
   passport.authenticate('jwt', {session: false}),
   ensureAuthenticated,
+  adminAuthenticated,
   async (req, res) => {
     console.log(req.query.photoUrl)
     var doc = await Task.findByIdAndUpdate(
@@ -92,7 +94,7 @@ router.patch(
         console.log($filePath)
         fs.unlinkSync($filePath, (err)=>{
             if(err){
-                console.log("couldnt delete " + req.user.photo + " image");
+                console.log("couldnt delete " + req.query.photo + " image");
                 res.status(400).send({
                     "errmsg": "Sorry, couldnt delete image..."
                 })
@@ -100,7 +102,7 @@ router.patch(
         });
     }
     catch(e){
-        console.log("couldnt find " + req.user.photo + " to be deleted");
+        console.log("couldnt find " + req.query.photo + " to be deleted");
     }
     res.status(200).send({
         "msg": "The image is deleted...",
