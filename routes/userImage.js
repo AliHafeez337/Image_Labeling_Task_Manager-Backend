@@ -7,7 +7,7 @@ const fs = require("fs");
 
 // Load User model
 const User = require('../models/User');
-const upload = require("../config/multer");
+const { upload } = require("../config/multer");
 
 // Local imports
 const { ensureAuthenticated } = require('../auth/auth');
@@ -21,6 +21,7 @@ router.patch(
   (req, res) => {
     try {
       upload(req, res, async function (err) {
+        console.log(req.user, req.file)
         if(req.file == null || req.file == undefined || req.file == ""){
           // res.json('No Image Set');
           res.status(200).send({

@@ -10,7 +10,7 @@ module.exports = {
       }
     }
     req.flash('error_msg', 'Please log in to view that resource');
-    res.status(401).send({
+    res.status(200).send({
       'errmsg': "Unauthorized, You can not access this resource."
     });
   },
@@ -18,7 +18,7 @@ module.exports = {
     if (req.user.usertype === 'admin') {
       return next()
     } else {
-      res.status(401).send({
+      res.status(200).send({
         'errmsg': "Unauthorized, You must be an admin access this resource."
       });
     }
