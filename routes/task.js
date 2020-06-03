@@ -181,7 +181,7 @@ router.get(
   ensureAuthenticated,
   async (req, res) => {
     const task = await Task.find(
-      { 'assignedTo': req.user._id }
+      { 'assignedTo': req.user._id, 'archived': false }
     )
 
     if (task){
