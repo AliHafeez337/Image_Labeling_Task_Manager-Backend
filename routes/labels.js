@@ -278,6 +278,43 @@ router.get(
   }
 )
 
+
+// Getting all the labels done by one labeller on one task
+router.get(
+  '/labeller/:labellerId/task/:taskId',
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated,
+  adminAuthenticated,
+  async (req, res) => {
+    MongoClient.connect(database, async (err, client) => {
+      if (err) {
+        return console.log('Unable to connect to MongoDB server');
+      }
+
+      const db = client.db(dbName);
+      const collection = 'labels';
+
+      await db.collection(collection)
+        .find({
+          'labeller': ObjectId(req.params.labellerId),
+          'task': req.params.taskId
+        })
+        .toArray((err, results) => {
+          if (err){
+            console.log(err)
+            res.status(400).send({
+              'errmsg': "Unable to find any labels for this image..."
+            })
+          };
+          // console.log(results)
+          res.status(200).send(results)
+        })
+
+      client.close();
+    })
+  }
+)
+
 // Get one label by the _id
 router.get(
   '/:id',
