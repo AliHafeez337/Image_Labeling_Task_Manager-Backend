@@ -161,47 +161,71 @@ router.delete(
                   '_id': label.task
                 }
               )
-              // console.log(doc1.labels)
-              // console.log(label.label)
-              for (let i = 0; i < doc1.labels.length; i++){
-                // console.log(doc1.labels[i]._id)
-                if (doc1.labels[i]._id == label.label){
-                  // console.log(i)
-                  var doc2 = await Task.findByIdAndUpdate(
-                    { 
-                      '_id': label.task
-                    },
-                    {
-                      $set:
-                      {
-                        ["labels." + i + ".done"]: false
-                      }
-                    },
-                    { new: true }
-                  )
-                  if (doc2){
-                    console.log(doc2.labels)
-                    calculatePercentage(doc2.labels)
-                      .then(async percent => {
-                        console.log(percent)
-                        var doc3 = await Task.findByIdAndUpdate(
-                          { 
-                            '_id': doc2._id
-                          },
-                          {
-                            'percent': percent
-                          },
-                          { new: true }
-                        )     
-                        res.status(200).send({ 
-                          'msg': "Successfully deleted the label...",
-                          taskDetails: doc3 
-                        })  
-                      })                  
-                  }
-                  break
+              console.log(doc1)
+
+              var deleteThis = true
+              for (let j = 0; j < doc1.photos.length; j++){
+                if (label.picture === doc1.photos[j]._id.toString()){
+                  continue
                 }
+                await db.collection(collection)
+                  .findOne({
+                    'picture': doc1.photos[j]._id.toString(),
+                    'label': label.label
+                  })
+                  .then(labels => {
+                    // console.log(labels)
+                    if (labels){
+                      deleteThis = false
+                      res.status(200).send({
+                        'msg': "This label was deleted but other pictures contain this label...",
+                        labels
+                      });
+                    }
+                  })
               }
+              // console.log(label.label)
+              if (deleteThis){
+                for (let i = 0; i < doc1.labels.length; i++){
+                  // console.log(doc1.labels[i]._id)
+                  if (doc1.labels[i]._id == label.label){
+                    // console.log(i)
+                    var doc2 = await Task.findByIdAndUpdate(
+                      { 
+                        '_id': label.task
+                      },
+                      {
+                        $set:
+                        {
+                          ["labels." + i + ".done"]: false
+                        }
+                      },
+                      { new: true }
+                    )
+                    if (doc2){
+                      console.log(doc2.labels)
+                      calculatePercentage(doc2.labels)
+                        .then(async percent => {
+                          console.log(percent)
+                          var doc3 = await Task.findByIdAndUpdate(
+                            { 
+                              '_id': doc2._id
+                            },
+                            {
+                              'percent': percent
+                            },
+                            { new: true }
+                          )     
+                          res.status(200).send({ 
+                            'msg': "Label was deleted and also the label is undone...",
+                            taskDetails: doc3 
+                          })  
+                        })                  
+                    }
+                    break
+                  }
+                } 
+              }     
             })
             .catch(err => {
               console.log(err)
