@@ -196,4 +196,22 @@ router.get(
   }
 )
 
+router.get(
+  '/user/all',
+  passport.authenticate('jwt', {session: false}),
+  ensureAuthenticated,
+  adminAuthenticated, 
+  async (req, res) => {
+    var doc = await User.find({ usertype: 'labeller' });
+    // console.log(doc);
+    if (!doc){
+      res.status(200).send({
+        'errmsg': "Sorry, users not found..."
+      })
+    } else {
+      res.status(200).send(doc) 
+    }
+  }
+)
+
 module.exports = router;
