@@ -23,7 +23,7 @@ router.patch(
   (req, res) => {
     // try {
       const id = req.query.id;
-      console.log(id)
+      // console.log(id)
       upload(req, res, async function (err) {
         if(req.file == null || req.file == undefined || req.file == ""){
           // res.json('No Image Set');
@@ -75,7 +75,7 @@ router.patch(
   ensureAuthenticated,
   adminAuthenticated,
   async (req, res) => {
-    console.log(req.query.photoUrl)
+    // console.log(req.query.photoUrl)
     var doc = await Task.findByIdAndUpdate(
       { _id:  req.query.id }, 
       { 
@@ -87,7 +87,7 @@ router.patch(
       },
       { new: true }
       );
-    console.log(doc);
+    // console.log(doc);
       
     try{
         let $filePath= "./uploads/" + req.query.photoUrl
