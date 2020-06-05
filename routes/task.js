@@ -108,7 +108,7 @@ router.patch(
           err
         })
       } else {
-        res.status(200).send(doc)
+        res.status(200).send({msg:'Successfully added task',dat:doc})
       }
     })
   }
