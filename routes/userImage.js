@@ -21,7 +21,6 @@ router.patch(
   (req, res) => {
     try {
       upload(req, res, async function (err) {
-        console.log(req.user, req.file)
         if(req.file == null || req.file == undefined || req.file == ""){
           // res.json('No Image Set');
           res.status(200).send({
@@ -37,7 +36,7 @@ router.patch(
                 { _id:  req.user._id }, 
                 { photo: '' }
                 );
-              console.log(doc);
+              // console.log(doc);
               try{
                 let $filePath= "./uploads/" + doc.photo
                 fs.unlinkSync($filePath, (err)=>{
@@ -55,7 +54,7 @@ router.patch(
                 { photo: req.file.filename }, 
                 { new: true }
                 );
-            console.log(doc);
+            // console.log(doc);
             if (doc == null){
                 res.status(400).send({
                     errmsg: "Document to be updated not found."
