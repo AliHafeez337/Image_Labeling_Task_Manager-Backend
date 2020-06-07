@@ -45,7 +45,10 @@ module.exports = function(passport) {
       secretOrKey   : JWTsecret
   }, async (jwtPayload, cb) => {
       console.log(jwtPayload)
-      var user = await User.findById(jwtPayload._id)
+      var user = await User.findOne({
+        '_id': jwtPayload._id,
+        'archived': false
+      })
 
       if (!user){
         return cb(null, false);
