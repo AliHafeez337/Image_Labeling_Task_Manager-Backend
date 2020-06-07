@@ -46,7 +46,7 @@ router.post(
 
     if (body.password != null && body.password2 != null){
       if (body.password !== body.password2){
-        res.status(400).send({
+        res.status(200).send({
           'errmsg': "Passwords must match..."
         })
       }
@@ -69,23 +69,25 @@ router.post(
                 });
               })
               .catch(err => {
-                console.log(err)
+                console.log('ERRRRRRRRRRR IS HEREEEE')
+                console.log(err.errmsg)
                 res.status(200).send({
-                  'errmsg': err
+                  'errmsg': err.errmsg
                 });
               });
           })
           .catch((e) => {
             console.log(e);
-            res.status(400).send({
+            res.status(200).send({
               errmsg: "Couldn't generate the hash.",
             });
           });
       }
+    } else {
+      res.status(200).send({
+        errmsg: "Please provide complete data.",
+      });
     }
-    res.status(400).send({
-      errmsg: "Please provide complete data.",
-    });
   }
 )
 
@@ -107,14 +109,14 @@ router.patch(
     ]);
 
     if (!id.match(/^[0-9a-fA-F]{24}$/)){ // if object id is not valid
-      res.status(400).send({
+      res.status(200).send({
         'errmsg': "Valid Id must be provided..."
       })
     }
     else{
       if (body.password != null && body.password2 != null){
         if (body.password !== body.password2){
-          res.status(400).send({
+          res.status(200).send({
             'errmsg': "Passwords must match..."
           })
         }
@@ -134,7 +136,7 @@ router.patch(
             })
             .catch((e) => {
               console.log(e);
-              res.status(400).send({
+              res.status(200).send({
                 errmsg: "Couldn't generate the hash.",
               });
             });
@@ -165,7 +167,7 @@ router.delete(
     var doc = await User.deleteOne({ _id: id });
     console.log(doc);
     if (doc.deletedCount == 0){
-      res.status(400).send({
+      res.status(200).send({
         'errmsg': "Sorry, unable delete user."
       })
     } else {
@@ -187,7 +189,7 @@ router.get(
     var doc = await User.findOne({ _id: id });
     // console.log(doc);
     if (!doc){
-      res.status(400).send({
+      res.status(200).send({
         'errmsg': "Sorry, user not found..."
       })
     } else {
