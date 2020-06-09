@@ -200,7 +200,7 @@ router.get(
   passport.authenticate('jwt', {session: false}),
   ensureAuthenticated,
   async (req, res) => {
-    const task = await Task.findById(req.params.id)
+    const task = await Task.findById(req.params.id).populate('assignedTo')
 
     if (task){
       res.status(200).send(task)
