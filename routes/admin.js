@@ -69,8 +69,7 @@ router.post(
                 });
               })
               .catch(err => {
-                console.log('ERRRRRRRRRRR IS HEREEEE')
-                console.log(err.errmsg)
+                // console.log(err.errmsg)
                 res.status(200).send({
                   'errmsg': err.errmsg
                 });
@@ -165,7 +164,7 @@ router.delete(
   async (req, res) => {
     const id = req.params.id;
     var doc = await User.deleteOne({ _id: id });
-    console.log(doc);
+    // console.log(doc);
     if (doc.deletedCount == 0){
       res.status(200).send({
         'errmsg': "Sorry, unable delete user."

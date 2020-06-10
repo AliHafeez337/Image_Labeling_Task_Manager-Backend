@@ -33,10 +33,9 @@ router.get(
           done ++
         }
       })
-      console.log(done / loop * 100)
+      // console.log(done / loop * 100)
       task.percent = done / loop * 100
     })
-    console.log('send')
     res.status(200).send(tasks)
   }
 )
