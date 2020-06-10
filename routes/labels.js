@@ -161,7 +161,6 @@ router.delete(
                   '_id': label.task
                 }
               )
-              console.log(doc1)
 
               var deleteThis = true
               for (let j = 0; j < doc1.photos.length; j++){
@@ -203,10 +202,10 @@ router.delete(
                       { new: true }
                     )
                     if (doc2){
-                      console.log(doc2.labels)
+                      // console.log(doc2.labels)
                       calculatePercentage(doc2.labels)
                         .then(async percent => {
-                          console.log(percent)
+                          // console.log(percent)
                           var doc3 = await Task.findByIdAndUpdate(
                             { 
                               '_id': doc2._id
@@ -228,7 +227,7 @@ router.delete(
               }     
             })
             .catch(err => {
-              console.log(err)
+              // console.log(err)
               res.status(400).send({
                 'errmsg': "Unable to delete...",
               })
@@ -264,7 +263,7 @@ router.get(
         })
         .toArray((err, results) => {
           if (err){
-            console.log(err)
+            // console.log(err)
             res.status(400).send({
               'errmsg': "Unable to find any labels for this image..."
             })
@@ -301,7 +300,7 @@ router.get(
         })
         .toArray((err, results) => {
           if (err){
-            console.log(err)
+            // console.log(err)
             res.status(400).send({
               'errmsg': "Unable to find any labels for this image..."
             })
@@ -338,7 +337,7 @@ router.get(
           res.status(200).send(results)
         })
         .catch(err => {
-          console.log(err)
+          // console.log(err)
           res.status(400).send({
             'errmsg': "Unable to find label for this id..."
           })
